@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"math"
@@ -25,6 +26,7 @@ type Item struct {
 }
 
 var (
+	port          *string = flag.String("port", "1055", "The port to listen on")
 	conn          *sql.DB
 	selectItem    *sql.Stmt
 	storeItem     *sql.Stmt
@@ -183,6 +185,8 @@ func getRawItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	flag.Parse()
+
 	var err error
 	conn, err = sql.Open("sqlite3", "./items.db")
 	if err != nil {
@@ -201,5 +205,8 @@ func main() {
 	http.HandleFunc("/upload", handleUpload)
 	http.HandleFunc("/api/", getJsonItem)
 	http.HandleFunc("/", getRawItem)
-	log.Fatal(http.ListenAndServe(":1055", nil))
+
+	addr := "0.0.0.0:" + *port
+	log.Printf("Rotary server starting. . . Listening on %s\n", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
