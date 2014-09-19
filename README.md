@@ -35,3 +35,14 @@ Functions like the bare / GET except the server returns a json object that looks
 
 `<base64_urlencode>` is the base64 representation of the sha256sum of a binary blob, file, or anything really.
 
+
+##Testing
+
+To see the service in action run (this requies httpie). 
+
+```bash
+./assert.sh
+```
+
+go test cases will come when more than 2 people use this!
+
