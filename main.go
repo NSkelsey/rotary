@@ -19,14 +19,16 @@ import (
 )
 
 type Item struct {
+	// An item to store. ContentType must be a valid Mime type
 	Hash        string
-	FirstSeen   int64
+	FirstSeen   int64 // Time since the epoch
 	ContentType string
 	Raw         []byte
 }
 
 var (
-	port          *string = flag.String("port", "1055", "The port to listen on")
+	port          *string = flag.String("port", "1055", "The port to listen on.")
+	db            *string = flag.String("db", "./items.db", "The filepath to the db.")
 	conn          *sql.DB
 	selectItem    *sql.Stmt
 	storeItem     *sql.Stmt
@@ -188,7 +190,7 @@ func main() {
 	flag.Parse()
 
 	var err error
-	conn, err = sql.Open("sqlite3", "./items.db")
+	conn, err = sql.Open("sqlite3", *db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -206,7 +208,7 @@ func main() {
 	http.HandleFunc("/api/", getJsonItem)
 	http.HandleFunc("/", getRawItem)
 
-	addr := "0.0.0.0:" + *port
+	addr := "127.0.0.1:" + *port
 	log.Printf("Rotary server starting. . . Listening on %s\n", addr)
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
