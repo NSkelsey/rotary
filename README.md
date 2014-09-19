@@ -41,7 +41,7 @@ Functions like the bare / GET except the server returns a json object that looks
 To see the service in action run (this requies httpie). 
 
 ```bash
-./assert.sh
+$ http POST ahimsa.io:1055/upload Content-Type:text/plain < main.go
 ```
 
 go test cases will come when more than 2 people use this!
