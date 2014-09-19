@@ -15,12 +15,17 @@ Returns the raw file with content-type set to conttype
 
 GET /api/<base64_urlencode>
 Returns a json object that looks like:
-```
-
-
+```json
+{
+   "Raw" : "d29vb29vb29vb29vb29vb29vb29vb29vZgo=",
+   "ContentType" : "text/plain",
+   "Hash" : "5la2x0TvvH7eaL1pcCN9QBVzbdULDdmld6HyGq3_SIg=",
+   "FirstSeen" : 1411152910
+}
 ```
 
 
 
 
 <base64_urlencode> is the base64 representation of the sha256sum of a binary blob, file, or anything really.
+
