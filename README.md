@@ -41,7 +41,11 @@ Functions like the bare / GET except the server returns a json object that looks
 To see the service in action run (this requies httpie). 
 
 ```bash
-$ http POST ahimsa.io:1055/upload Content-Type:text/plain < main.go
+$ http POST img.ahimsa.io/upload Content-Type:text/plain < create_table.sql
+
+$ http GET img.ahimsa.io/eYQpbC_JWiz4tqZWaGmXGt8unK4A1Pgr6bhbdetWx4c=
+
+$ http GET img.ahimsa.io/api/eYQpbC_JWiz4tqZWaGmXGt8unK4A1Pgr6bhbdetWx4c=
 ```
 
 go test cases will come when more than 2 people use this!
