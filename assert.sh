@@ -1,4 +1,4 @@
 #!/bin/bash
 
-http POST localhost:1055/upload Content-Type:text/plain < hello.txt
+http POST ahimsa.io:1055/upload Content-Type:text/plain < dog.txt
 

@@ -3,20 +3,25 @@ Rotary
 
 A small go server that functions as a hash to file blob store. Storage is done in sqlite!
 
+__Note__! There is a 10MB file size limit
+
 
 ##Routes
 
-POST /upload
+`POST /upload`
 
-Upload some object via an http post. Returns 201 on success and greater than 400 on failure.
+Upload some object via a http post. 
+- Requires a Content-Type header providing the correct MIME type for the item.
+- Requires a Content-Length header set to the length of the request's body.
+- Returns 201 on success and greater than 400 on failure.
 
-GET /<base64_urlencode> 
+`GET /<base64_urlencode>` 
 
-Returns the raw file with content-type set to conttype
+Returns the raw file with content-type set by the header on.
 
-GET /api/<base64_urlencode>
+`GET /api/<base64_urlencode>`
 
-Returns a json object that looks like:
+Functions like the bare / GET except the server returns a json object that looks like:
 ```json
 {
    "Raw" : "d29vb29vb29vb29vb29vb29vb29vb29vZgo=",
@@ -28,6 +33,5 @@ Returns a json object that looks like:
 
 
 
-
-<base64_urlencode> is the base64 representation of the sha256sum of a binary blob, file, or anything really.
+`<base64_urlencode>` is the base64 representation of the sha256sum of a binary blob, file, or anything really.
 

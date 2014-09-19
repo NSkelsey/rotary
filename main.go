@@ -1,11 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
+	"fmt"
 	"log"
 	"math"
 	"net/http"
@@ -27,7 +28,7 @@ var (
 	conn          *sql.DB
 	selectItem    *sql.Stmt
 	storeItem     *sql.Stmt
-	MAX_FILE_SIZE int = 10 * int(math.Pow(2, 20)) // 10 MB max filesize
+	MAX_FILE_SIZE int64 = 10 * int64(math.Pow(2, 20)) // 10 MB max filesize
 )
 
 func compHash(raw []byte) string {
@@ -78,9 +79,17 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buf, err := ioutil.ReadAll(r.Body)
+	size := r.ContentLength
+	if size > MAX_FILE_SIZE {
+		http.Error(w, "Request Entity Too Large", 413)
+		return
+	}
+
+	buf := bytes.NewBuffer(make([]byte, 0, size))
+	_, err := buf.ReadFrom(r.Body)
 	if err != nil {
-		http.Error(w, "Could not read file.", 500)
+		fmt.Errorf("Incoming post: %v", err)
+		http.Error(w, "Error reading request body", 500)
 		return
 	}
 
@@ -88,7 +97,7 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 	if cont_type == "" {
 		http.Error(w, "No Content-Type provided", 403)
 	}
-	item := makeItem(buf, cont_type)
+	item := makeItem(buf.Bytes(), cont_type)
 
 	rows, err := selectItem.Query(item.Hash)
 	defer rows.Close()
@@ -110,6 +119,7 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Database error.", 500)
 		return
 	}
+	log.Printf("Stored: %v\tSize: %d\n", item.Hash, len(item.Raw))
 
 	itemUrl := "http://localhost:1055/" + item.Hash
 	w.WriteHeader(201)
@@ -151,7 +161,7 @@ func getJsonItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "JSON marshal failed.", 500)
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Content-Length", strconv.Itoa(len(item.Raw)))
+	w.Header().Set("Content-Length", strconv.Itoa(len(bytes)))
 	w.Write(bytes)
 }
 
